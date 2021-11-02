@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body>
+    <div id="app">
+      {{message}}
+      <div :id="message">
+        <todo-list :list="list"></todo-list>
+      </div>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/vue@2.6.14/dist/vue.js"></script>
+  </body>
+  <script>
+    // click.stop 阻止单击事件传播 冒泡
+    // click.prevent 不再重载页面 阻止默认行为
+    // click.stop.prevent
+
+    Vue.component("todo-item", {
+      props: {
+        title: String,
+        del: {
+          type: Boolean,
+          default: false,
+        },
+      },
+      template: ` 
+       <li>
+            <span v-if="!del">{{title}}</span>
+            <span v-else>{{title}}</span>
+            <button v-show="del" @click="handleclick">{{title}}</button>
+        </li>
+        `, //复用得html模板
+
+      methods: {
+        handleclick() {
+          this.$emit("delete", this.title);
+        },
+      },
+    });
+    Vue.component("todo-list", {
+      props: {
+        list: {
+          type: Array,
+        },
+      },
+      template: `
+        <ul>
+            <todo-item @delete="handleDelete" v-for="item in list" :title="item.title" :del="item.del"></todo-item>
+        </ul>
+        `,
+      methods: {
+        handleDelete(val) {
+          console.log("删除事件", val);
+        },
+      },
+    });
+    var vm = new Vue({
+      el: "#app",
+      data: {
+        message: "hello word",
+        list: [
+          { title: "课程1", del: false },
+          { title: "课程3", del: true },
+        ],
+      },
+    });
+  </script>
+</html>
